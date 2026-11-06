@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éclat Pâtisserie — Авторские десерты</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #FDFBF7;
+            --text: #3E2723;
+            --accent: #D4A373;
+            --accent-hover: #b88b60;
+            --secondary: #E5989B;
+            --light: #ffffff;
+            --border: #EAE0D5;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        h1, h2, h3, .brand span {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+        
+        /* Header */
+        header {
+            background: var(--light);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand { text-decoration: none; color: var(--text); display: flex; flex-direction: column; }
+        .brand span { font-size: 24px; letter-spacing: 2px; }
+        .brand small { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); }
+        
+        nav { display: flex; gap: 25px; }
+        nav a { text-decoration: none; color: var(--text); font-size: 14px; font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: var(--accent); }
+        
+        .cart-btn {
+            background: none; border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: inherit;
+        }
+
+        /* Hero */
+        .hero {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 80px 5%; gap: 40px; max-width: 1200px; margin: 0 auto;
+        }
+        .hero-text { flex: 1; }
+        .hero-text h1 { font-size: 56px; line-height: 1.1; margin-bottom: 20px; }
+        .hero-text h1 em { color: var(--accent); }
+        .hero-text p { font-size: 18px; margin-bottom: 30px; color: #666; max-width: 450px; }
+        .hero-img { flex: 1; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .hero-img img { width: 100%; height: auto; display: block; }
+        
+        .btn {
+            background: var(--accent); color: white; border: none; padding: 16px 32px;
+            border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer;
+            transition: background 0.3s; font-family: inherit;
+        }
+        .btn:hover { background: var(--accent-hover); }
+
+        /* Категории */
+        .categories { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; margin-bottom: 40px; }
+        .section-title h2 { font-size: 36px; margin-bottom: 10px; }
+        
+        .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .cat-card {
+            position: relative; border-radius: 15px; overflow: hidden; height: 300px;
+            cursor: pointer; transition: transform 0.3s;
+        }
+        .cat-card:hover { transform: translateY(-5px); }
+        .cat-card img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-card .overlay {
+            position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; color: white;
+        }
+        .cat-card h3 { font-size: 24px; margin-bottom: 5px; }
+        .cat-card p { font-size: 14px; opacity: 0.9; }
+
+        /* Карточка товара (Конструктор) */
+        .product-page { padding: 40px 5%; max-width: 1200px; margin: 0 auto; display: none; }
+        .product-layout { display: flex; gap: 50px; }
+        .product-img { flex: 1; border-radius: 20px; overflow: hidden; }
+        .product-img img { width: 100%; display: block; }
+        .configurator { flex: 1; }
+        .configurator h1 { font-size: 40px; margin-bottom: 10px; }
+        .configurator .desc { color: #666; margin-bottom: 30px; }
+        
+        .option-block { margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 25px; }
+        .option-title { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .option-title h3 { font-size: 18px; }
+        .option-title span { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .flavor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .flavor-btn {
+            padding: 15px; border: 1px solid var(--border); background: white; border-radius: 10px;
+            cursor: pointer; text-align: left; font-family: inherit; transition: all 0.2s;
+        }
+        .flavor-btn.active { border-color: var(--accent); background: #fdf8f4; box-shadow: 0 0 0 1px var(--accent); }
+        
+        .size-grid { display: flex; gap: 10px; }
+        .size-btn {
+            flex: 1; padding: 15px; border: 1px solid var(--border); background: white; border-radius: 10px;
+            cursor: pointer; font-family: inherit; text-align: center; transition: all 0.2s;
+        }
+        .size-btn.active { border-color: var(--accent); background: #fdf8f4; }
+        .size-btn strong { display: block; font-size: 16px; }
+        .size-btn small { color: #888; font-size: 12px; }
+        
+        .checks label { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; font-size: 15px; }
+        .checks input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+        
+        details { margin-bottom: 30px; cursor: pointer; }
+        summary { font-weight: 600; color: var(--text); list-style: none; display: flex; justify-content: space-between; }
+        summary::-webkit-details-marker { display: none; }
+        details p { margin-top: 10px; font-size: 14px; color: #666; }
+        
+        .buy-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .buy-row .price { font-size: 28px; font-weight: 600; font-family: 'Playfair Display', serif; }
+
+        /* Footer */
+        footer { background: #2b1f1a; color: white; padding: 60px 5%; margin-top: 80px; text-align: center; }
+        footer h4 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 15px; color: var(--accent); }
+        footer p { opacity: 0.6; font-size: 14px; }
+        
+        @media (max-width: 768px) {
+            .hero, .product-layout { flex-direction: column; }
+            .hero-text h1 { font-size: 36px; }
+            nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="brand">
+            <span>ÉCLAT</span>
+            <small>Pâtisserie</small>
+        </a>
+        <nav>
+            <a href="#">Главная</a>
+            <a href="#" onclick="showCatalog()">Каталог</a>
+            <a href="#" onclick="showProduct()">Торт на заказ</a>
+            <a href="#">О нас</a>
+        </nav>
+        <button class="cart-btn">
+            🛍 Корзина <span id="cart-count">0</span>
+        </button>
+    </header>
+
+    <!-- ГЛАВНАЯ СТРАНИЦА -->
+    <main id="page-home">
+        <section class="hero">
+            <div class="hero-text">
+                <h1>Сладкие моменты, <br><em>созданные для вас</em></h1>
+                <p>Авторские торты, нежные десерты и фигурный бельгийский шоколад — для событий, которые хочется запомнить.</p>
+                <button class="btn" onclick="showCatalog()">Выбрать десерт →</button>
+            </div>
+            <div class="hero-img">
+                <img src="https://images.unsplash.com/photo-1554922735-c09cab077e35?auto=format&fit=crop&w=800&q=80" alt="Торт">
+            </div>
+        </section>
+
+        <section class="categories">
+            <div class="section-title">
+                <h2>Коллекция Éclat</h2>
+            </div>
+            <div class="cat-grid">
+                <div class="cat-card" onclick="showProduct()">
+                    <img src="https://images.unsplash.com/photo-1554922735-c09cab077e35?auto=format&fit=crop&w=500&q=80" alt="Торты">
+                    <div class="overlay">
+                        <h3>Торты на заказ</h3>
+                        <p>для ваших особенных дат</p>
+                    </div>
+                </div>
+                <div class="cat-card" onclick="showProduct()">
+                    <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=500&q=80" alt="Капкейки">
+                    <div class="overlay">
+                        <h3>Капкейки</h3>
+                        <p>маленький повод для радости</p>
+                    </div>
+                </div>
+                <div class="cat-card" onclick="showProduct()">
+                    <img src="https://images.unsplash.com/photo-1687795097254-f019f9d7fd17?auto=format&fit=crop&w=500&q=80" alt="Шоколад">
+                    <div class="overlay">
+                        <h3>Бельгийский шоколад</h3>
+                        <p>фигурные конфеты ручной работы</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- КАТАЛОГ (Упрощенный) -->
+    <main id="page-catalog" style="display:none; padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; margin-bottom: 30px;">Каталог десертов</h2>
+        <div class="cat-grid">
+             <div class="cat-card" onclick="showProduct()">
+                <img src="https://images.unsplash.com/photo-1554922735-c09cab077e35?auto=format&fit=crop&w=500&q=80" alt="Торт">
+                <div class="overlay"><h3>Малиновый шёлк</h3><p>3 200 ₽</p></div>
+            </div>
+            <div class="cat-card" onclick="showProduct()">
+                <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=500&q=80" alt="Капкейки">
+                <div class="overlay"><h3>Ванильное облако</h3><p>1 800 ₽</p></div>
+            </div>
+             <div class="cat-card" onclick="showProduct()">
+                <img src="https://images.unsplash.com/photo-1687795097254-f019f9d7fd17?auto=format&fit=crop&w=500&q=80" alt="Шоколад">
+                <div class="overlay"><h3>Фигурные конфеты</h3><p>1 450 ₽</p></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- СТРАНИЦА ТОВАРА -->
+    <main id="page-product" class="product-page">
+        <div class="product-layout">
+            <div class="product-img">
+                <img src="https://images.unsplash.com/photo-1554922735-c09cab077e35?auto=format&fit=crop&w=800&q=80" alt="Торт">
+            </div>
+            <div class="configurator">
+                <h1>Малиновый шёлк</h1>
+                <p class="desc">Воздушный ванильный бисквит, малиновое конфи и нежный крем-чиз. Украшен свежими ягодами.</p>
+                
+                <div class="option-block">
+                    <div class="option-title">
+                        <h3>1. Выберите начинку</h3>
+                        <span>Обязательно</span>
+                    </div>
+                    <div class="flavor-grid">
+                        <button class="flavor-btn" onclick="selectFlavor(this)">Ваниль</button>
+                        <button class="flavor-btn" onclick="selectFlavor(this)">Шоколад</button>
+                        <button class="flavor-btn active" onclick="selectFlavor(this)">Малина</button>
+                        <button class="flavor-btn" onclick="selectFlavor(this)">Фисташка</button>
+                    </div>
+                </div>
+
+                <div class="option-block">
+                    <div class="option-title">
+                        <h3>2. Вес торта</h3>
+                        <span>≈ 200 г на гостя</span>
+                    </div>
+                    <div class="size-grid">
+                        <button class="size-btn active" onclick="selectSize(this, 3200)">
+                            <strong>1 кг</strong><small>5–6 гостей</small>
+                        </button>
+                        <button class="size-btn" onclick="selectSize(this, 4300)">
+                            <strong>1.5 кг</strong><small>8–10 гостей</small>
+                        </button>
+                        <button class="size-btn" onclick="selectSize(this, 5400)">
+                            <strong>2 кг</strong><small>10–12 гостей</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="option-block">
+                    <div class="option-title">
+                        <h3>3. Убрать ингредиенты</h3>
+                        <span>По желанию</span>
+                    </div>
+                    <div class="checks">
+                        <label><input type="checkbox"> Без орехов</label>
+                        <label><input type="checkbox"> Без лактозы</label>
+                        <label><input type="checkbox"> Без глютена</label>
+                    </div>
+                </div>
+
+                <details>
+                    <summary>Состав и аллергены <span>▼</span></summary>
+                    <p>Мука пшеничная, яйца, сливочное масло, сахар, сливочный сыр, малина, ваниль. Содержит молочные продукты, яйца и глютен.</p>
+                </details>
+
+                <div class="buy-row">
+                    <div>
+                        <small style="display:block; color:#999; font-size:12px;">Итого</small>
+                        <div class="price"><span id="total-price">3 200</span> ₽</div>
+                    </div>
+                    <button class="btn" onclick="addToCart()">🛍 Добавить в корзину</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="brand" style="align-items:center; margin-bottom: 20px;">
+            <span style="color:white;">ÉCLAT</span>
+            <small style="color:var(--accent);">Pâtisserie</small>
+        </div>
+        <p>Авторские десерты ручной работы<br>для ваших особенных моментов.</p>
+        <p style="margin-top: 20px;">+7 (999) 999-24-81 · hello@eclat-patisserie.ru</p>
+    </footer>
+
+    <script>
+        // Простая навигация
+        function showCatalog() {
+            document.getElementById('page-home').style.display = 'none';
+            document.getElementById('page-product').style.display = 'none';
+            document.getElementById('page-catalog').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function showProduct() {
+            document.getElementById('page-home').style.display = 'none';
+            document.getElementById('page-catalog').style.display = 'none';
+            document.getElementById('page-product').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // Выбор начинки
+        function selectFlavor(btn) {
+            document.querySelectorAll('.flavor-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // Выбор веса и изменение цены
+        function selectSize(btn, price) {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('total-price').innerText = price.toLocaleString('ru-RU');
+        }
+
+        // Корзина
+        let cartCount = 0;
+        function addToCart() {
+            cartCount++;
+            document.getElementById('cart-count').innerText = cartCount;
+            alert('Десерт добавлен в корзину!');
+        }
+    </script>
+</body>
+</html>
